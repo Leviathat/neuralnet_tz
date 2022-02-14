@@ -1,4 +1,9 @@
-from typing import List, Dict
+from datetime import datetime
+from typing import Dict, Any
+from dateutil.parser import parse
+import time
+
+UUID = 'Script identificator'
 
 
 class NluCall:
@@ -22,18 +27,6 @@ class NeuroNetLibrary:
     dialog: NluCall = None
     __env: Dict = {}
 
-    def storage(self, key, *args):
-        if args:
-            for args_key in args:
-                try:
-                    return self.__env[args_key]
-                except KeyError:
-                    pass
-        return self.__env[key]
-
-    def log(self, name: str, data: str):
-        pass
-
     def env(self, name=None, val=None):
         # Declaration many variables with their values [ NAME MUST BE DICT ]
         if type(name) is dict:
@@ -54,6 +47,34 @@ class NeuroNetLibrary:
         # Get all Env_variables
         else:
             return self.__env
+
+    def log(self, name: str, data: str):
+        pass
+
+    def storage(self, key, *args):
+        if args:
+            for args_key in args:
+                try:
+                    return self.__env[args_key]
+                except KeyError:
+                    pass
+        return self.__env[key]
+
+    def call(self,
+             msisdn: str,
+             date: (datetime, str) = None,
+             channel: str = None,
+             script: (str, UUID) = None,
+             entry_point: str = None,
+             transport: str = 'sip',
+             on_success_call: Any[None, str] = None,
+             on_failed_call=None,
+             proto_additional: dict = None):
+
+        if date:
+            return parse(date)
+        default_date = time.strftime('%Y-%m-%d %H:%M')
+        return default_date
 
     def __init__(self, nlu_call: NluCall, event_loop=None):
         self.dialog = nlu_call
